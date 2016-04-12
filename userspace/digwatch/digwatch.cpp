@@ -18,12 +18,14 @@ extern "C" {
 }
 
 #include <sinsp.h>
-#include <config_digwatch.h>
+#include "config_digwatch.h"
+#include "configuration.h"
 #include "rules.h"
 #include "formats.h"
 #include "fields.h"
 #include "syslog.h"
 #include "utils.h"
+#include <yaml-cpp/yaml.h>
 
 static bool g_terminate = false;
 
@@ -153,6 +155,8 @@ void add_lua_path(lua_State *ls, string path)
 	lua_pop(ls, 1);
 }
 
+
+
 //
 // ARGUMENT PARSING AND PROGRAM SETUP
 //
@@ -240,6 +244,9 @@ int digwatch_init(int argc, char **argv)
 
 		}
 
+		digwatch_configuration config;
+		config.init();
+
 		if(signal(SIGINT, signal_callback) == SIG_ERR)
 		{
 			fprintf(stderr, "An error occurred while setting SIGINT signal handler.\n");
@@ -268,7 +275,6 @@ int digwatch_init(int argc, char **argv)
 				goto exit;
 			}
 		}
-
 
 		// Initialize Lua interpreter
 		ls = lua_open();
@@ -315,7 +321,7 @@ int digwatch_init(int argc, char **argv)
 	}
 	catch(...)
 	{
-		printf("Exception\n");
+		printf("Error, exiting.\n");
 		result = EXIT_FAILURE;
 	}
 
