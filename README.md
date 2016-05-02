@@ -1,13 +1,11 @@
 # Sysdig Falco
 ### *Host Activity Monitoring using Sysdig Event Filtering*
 
-## Overview
-Brief description of what, why, how, and pointer to website.
+## What's Falco?
 
-### What kind of behaviors can Falco detect?
+Falco is a behavioral monitoring agent with native support for containers. 
 
-Falco can detect and alert on any behavior that involves making Linux system calls.  Thanks to Sysdig's core decoding and state tracking functionality, Falco alerts can be triggered by the use of specific system calls, their arguments, and by properties of the calling process. Rules are expressed in a high-level, human-readable language. 
-
+Falco can detect and alert on any behavior that involves making Linux system calls. Using Sysdig's core decoding and state tracking functionality, Falco alerts can be triggered by the use of specific system calls, their arguments, and by properties of the calling process. Rules are expressed in a high-level, human-readable language. 
 
 ## Installing Falco
 Instructions for installing via .deb, .rpm, or docker. To be filled in pre-release.
