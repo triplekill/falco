@@ -178,6 +178,10 @@ function load_rules(filename)
       end
    end
 
+   -- HACK: Add an and clause that provides an initial filter on the types of events/syscalls used by all the rules.
+   local precond_ast = compiler.compile_filter("(evt.type in (open, openat, execve, setuid, creat, listen, setsid) or syscall.type in (execve, rename, remove, mrdir, unlink, unlink_at, mkdir, setns, listen, accept, connect))", state.macros)
+   state.filter_ast = { type = "BinaryBoolOp", operator = "and", left = precond_ast.filter.value, right = state.filter_ast }
+
    install_filter(state.filter_ast)
    io.flush()
 end

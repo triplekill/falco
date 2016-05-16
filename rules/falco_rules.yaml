@@ -218,6 +218,7 @@
 #   output: "Loaded .so from unexpected dir (%user.name %proc.name %evt.dir %evt.type %evt.args %fd.name)"
 #   priority: WARNING
 
+# XXX/mstemm Note that this rule is limited to the system calls/events used by all other rules right now.
 - rule: syscall_returns_eaccess
   desc: any system call that returns EACCESS. This is not always a strong indication of a problem, hence the INFO priority.
   condition: evt.res = EACCESS
@@ -243,7 +244,7 @@
 
 - rule: system_user_interactive
   desc: an attempt to run interactive commands by a system (i.e. non-login) user
-  condition: system_users and interactive
+  condition: spawn_process and system_users and interactive
   output: "System user ran an interactive command (user=%user.name command=%proc.cmdline)"
   priority: WARNING
 
@@ -256,10 +257,12 @@
 # sockfamily ip is to exclude certain processes (like 'groups') that communicate on unix-domain sockets
 - rule: system_binaries_network_activity
   desc: any network activity performed by system binaries that are not expected to send or receive any network traffic
-  condition: fd.sockfamily = ip and system_binaries
+  condition: (inbound or outbound) and (fd.sockfamily = ip and system_binaries)
   output: "Known system binary sent/received network traffic (user=%user.name command=%proc.cmdline connection=%fd.name)"
   priority: WARNING
 
+# XXX/mstemm I don't think this rule can ever trigger given that we're not accepting read/write events?
+# XXX not covered by precondition
 - rule: ssh_error_syslog
   desc: any ssh errors (failed logins, disconnects, ...) sent to syslog
   condition: syslog and ssh_error_message and evt.dir = <
@@ -274,10 +277,11 @@
 
 - rule: user_mgmt_binaries
   desc: activity by any programs that can manage users, passwords, or permissions. sudo and su are excluded. Activity in containers is also excluded--some containers create custom users on top of a base linux distribution at startup.
-  condition: not proc.name in (su, sudo) and not container and (adduser_binaries or login_binaries or passwd_binaries or shadowutils_binaries)
+  condition: spawn_process and not proc.name in (su, sudo) and not container and (adduser_binaries or login_binaries or passwd_binaries or shadowutils_binaries)
   output: "User management binary command run outside of container (user=%user.name command=%proc.cmdline)"
   priority: WARNING
 
+# XXX/mstemm the flags contains O_CREAT condition is limited to the events/syscalls used by all other rules.
 # (we may need to add additional checks against false positives, see: https://bugs.launchpad.net/ubuntu/+source/rkhunter/+bug/86153)
 - rule: create_files_below_dev
   desc: creating any files below /dev other than known programs that manage devices. Some rootkits hide files in /dev.
