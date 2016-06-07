@@ -6,6 +6,8 @@ This file documents all notable changes to Falco. The release numbering uses [se
 
 Released 2016-06-07
 
+For full handling of setsid system calls and session id tracking, falco requires a sysdig version >= 0.10.0.
+
 ### Major Changes
 - Add TravisCI regression tests. Testing involves a variety of positive, negative, and informational trace files with both plain and json output. [[#76](https://github.com/draios/falco/pull/76)] [[#83](https://github.com/draios/falco/pull/83)]
 - Fairly big rework of ruleset to improve coverage, reduce false positives, and handle installation environments effectively [[#83](https://github.com/draios/falco/pull/83)] [[#87](https://github.com/draios/falco/pull/87)]
